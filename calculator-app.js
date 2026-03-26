@@ -226,12 +226,12 @@ function App() {
     if (weightStr === '') return { kind: 'empty', calories: null, weightGrams: null };
 
     const weightGrams = Number(weightStr);
-    if (!Number.isFinite(weightGrams) || weightGrams < 0) {
+    if (!Number.isFinite(weightGrams) || weightGrams <= 0) {
       return {
         kind: 'error',
         calories: null,
         weightGrams: null,
-        error: 'Enter weight in grams as a number >= 0.',
+        error: 'Вес должен быть больше 0.',
       };
     }
 
@@ -317,7 +317,7 @@ function App() {
             setFormError('');
 
             if (preview.kind === 'empty') {
-              setFormError('Enter weight in grams to add the product.');
+              setFormError('Введите вес больше 0.');
               return;
             }
             if (preview.kind === 'error') {
