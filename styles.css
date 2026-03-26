@@ -118,6 +118,11 @@ input:focus {
   background: rgba(72, 213, 151, 0.22);
 }
 
+.primaryButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .dangerButton {
   background: transparent;
   color: var(--error);

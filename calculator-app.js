@@ -223,20 +223,29 @@ function App() {
 
   const preview = useMemo(() => {
     const weightStr = weightGramsInput.trim();
-    if (weightStr === '') return { kind: 'empty', calories: null, weightGrams: null };
+    if (weightStr === '') return { kind: 'empty', calories: null, weightGrams: null, error: null };
 
     const weightGrams = Number(weightStr);
-    if (!Number.isFinite(weightGrams) || weightGrams <= 0) {
+    if (!Number.isFinite(weightGrams)) {
       return {
         kind: 'error',
         calories: null,
         weightGrams: null,
-        error: 'Вес должен быть больше 0.',
+        error: 'Ошибка: вес должен быть числом больше 0.',
+      };
+    }
+
+    if (weightGrams <= 0) {
+      return {
+        kind: 'error',
+        calories: null,
+        weightGrams: null,
+        error: 'Ошибка: вес должен быть больше 0.',
       };
     }
 
     const calories = computeCalories(selectedProduct.kcalPer100g, weightGrams);
-    return { kind: 'ok', calories, weightGrams };
+    return { kind: 'ok', calories, weightGrams, error: null };
   }, [selectedProduct.kcalPer100g, weightGramsInput]);
 
   const totalCalories = useMemo(() => {
@@ -313,11 +322,12 @@ function App() {
         {
           type: 'button',
           className: 'primaryButton',
+          disabled: preview.kind !== 'ok',
           onClick: () => {
             setFormError('');
 
             if (preview.kind === 'empty') {
-              setFormError('Введите вес больше 0.');
+              setFormError('Пусто: введите вес (число больше 0).');
               return;
             }
             if (preview.kind === 'error') {
@@ -353,6 +363,7 @@ function App() {
               'div',
               { className: 'previewRow' },
               e('p', { className: 'mutedP' }, 'Preview'),
+              e('p', { className: 'success' }, 'Успех: данные корректны'),
               e('p', { className: 'success' },
                 'Weight: ',
                 e('strong', null, `${formatCalories(preview.weightGrams)} g`)
@@ -367,7 +378,7 @@ function App() {
           ? e('p', { className: 'error' }, preview.error)
           : null,
         preview.kind === 'empty'
-          ? e('p', { className: 'hint' }, 'Pick a product and enter weight to see the preview.')
+          ? e('p', { className: 'hint' }, 'Пусто: введите вес (число больше 0).')
           : null
       ),
       e('div', { className: 'srOnly', 'aria-live': 'assertive' }, ariaAnnouncement)
